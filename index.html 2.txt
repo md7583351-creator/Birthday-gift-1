@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Gift For You</title>
+    <style>
+        :root {
+            --primary-pink: #ff74a4;
+            --secondary-pink: #ff9a9e;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        /* Background Animation Container */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Main Content Card */
+        .card {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 80%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ff74a4, #f8c291);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .message {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        #start-btn {
+            background: var(--primary-pink);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 116, 164, 0.4);
+        }
+
+        #start-btn:hover {
+            transform: scale(1.1);
+            background: #ff5a92;
+        }
+
+        /* Falling Text Animation */
+        .falling-text {
+            position: absolute;
+            color: var(--secondary-pink);
+            font-size: 14px;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div id="welcome-screen" class="card">
+        <h1>A Special Gift For You 🎁</h1>
+        <p class="message">I have prepared something small but meaningful for you.<br>Click the button below to open it.</p>
+        <button id="start-btn">Open My Gift</button>
+    </div>
+
+    <div id="main-content" class="card hidden">
+        <h1 id="dynamic-text">Happy Birthday!</h1>
+        <p class="message" id="sub-message">Wishing you all the best on your special day.</p>
+    </div>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const mainContent = document.getElementById('main-content');
+        const dynamicText = document.getElementById('dynamic-text');
+        const container = document.getElementById('canvas-container');
+        const music = document.getElementById('bg-music');
+
+        // Messages to cycle through (Translated to English)
+        const messages = [
+            "Today is a special day...",
+            "Because it's your birthday!",
+            "I hope you stay happy...",
+            "And beautiful every single day.",
+            "Always keep that smile on your face!",
+            "Happy Birthday! ❤️"
+        ];
+
+        let messageIndex = 0;
+
+        startBtn.addEventListener('click', () => {
+            welcomeScreen.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            
+            // Start music
+            music.play().catch(e => console.log("Music autoplay blocked"));
+
+            // Start falling text effect
+            setInterval(createFallingText, 200);
+
+            // Cycle through messages
+            const messageInterval = setInterval(() => {
+                if (messageIndex < messages.length) {
+                    dynamicText.innerText = messages[messageIndex];
+                    messageIndex++;
+                } else {
+                    clearInterval(messageInterval);
+                }
+            }, 3000);
+        });
+
+        function createFallingText() {
+            const textElement = document.createElement('div');
+            textElement.classList.add('falling-text');
+            
+            // Randomly choose between "Happy Birthday" or Hearts
+            const items = ["Happy Birthday", "❤️", "Love", "✨", "Best Wishes"];
+            textElement.innerText = items[Math.floor(Math.random() * items.length)];
+            
+            textElement.style.left = Math.random() * 100 + "vw";
+            textElement.style.top = "-5vh";
+            textElement.style.opacity = Math.random();
+            textElement.style.fontSize = (Math.random() * 10 + 10) + "px";
+            
+            const duration = Math.random() * 3 + 2;
+            textElement.style.animationDuration = duration + "s";
+            
+            container.appendChild(textElement);
+
+            // Remove element after animation finishes
+            setTimeout(() => {
+                textElement.remove();
+            }, duration * 1000);
+        }
+    </script>
+</body>
+</html>
